@@ -15,7 +15,13 @@ public class SelectorThread implements Runnable{
 
     LinkedBlockingQueue<Channel> queue = new LinkedBlockingQueue<>();
 
-    SelectorThread(){
+    /**
+     * 持有一个它对应的group的引用，作用是用于往其他selector上面去添加channel。
+     */
+    SelectorThreadGroup group = null;
+
+    SelectorThread(SelectorThreadGroup group){
+        this.group = group;
         try {
             selector = Selector.open();
         } catch (IOException e) {
@@ -108,7 +114,8 @@ public class SelectorThread implements Runnable{
             client.configureBlocking(false);
 
             // 需要扔给worker selector
-
+            SelectorThread nextSelector = group.nextSelector();
+            group.register(client,nextSelector);
 
         } catch (IOException e) {
             e.printStackTrace();

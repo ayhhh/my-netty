@@ -25,7 +25,7 @@ public class SelectorThreadGroup {
     public SelectorThreadGroup(int num){
         threads = new SelectorThread[num];
         for (int i = 0; i < num; i++) {
-            threads[i] = new SelectorThread();
+            threads[i] = new SelectorThread(this);
             new Thread(threads[i]).start();
         }
     }
@@ -46,7 +46,7 @@ public class SelectorThreadGroup {
     }
 
     // 注册channel
-    private SelectorThread nextSelector() {
+    public SelectorThread nextSelector() {
         int index = xid.getAndIncrement() % threads.length;
         return threads[index];
     }
