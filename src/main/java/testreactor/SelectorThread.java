@@ -114,8 +114,8 @@ public class SelectorThread implements Runnable{
             client.configureBlocking(false);
 
             // 需要扔给worker selector
-            SelectorThread nextSelector = group.nextSelector();
-            group.register(client,nextSelector);
+            SelectorThread nextSelector = group.worker.nextSelector();
+            group.worker.register(client,nextSelector);
 
         } catch (IOException e) {
             e.printStackTrace();

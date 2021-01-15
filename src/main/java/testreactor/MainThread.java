@@ -6,9 +6,10 @@ public class MainThread {
 
         // 1.创建IO Thread
         // 乞丐版，创建的线程组中每个线程都负责读写
-        SelectorThreadGroup group = new SelectorThreadGroup(3);
-
+        SelectorThreadGroup boss = new SelectorThreadGroup(3);
+        SelectorThreadGroup worker = new SelectorThreadGroup(3);
+        boss.setWorker(worker);
         // 2.把监听的server注册到某一个Thread（selector）
-        group.bind(9999); // 绑定端口号
+        boss.bind(9999); // 绑定端口号
     }
 }

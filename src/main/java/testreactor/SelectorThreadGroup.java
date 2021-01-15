@@ -8,9 +8,16 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class SelectorThreadGroup {
+public class SelectorThreadGroup { //自己本身都是boss
     SelectorThread[] threads;
     ServerSocketChannel server = null;
+
+    SelectorThreadGroup worker = this; // 默认worker是自己
+
+    public void setWorker(SelectorThreadGroup worker){
+        this.worker = worker;
+    }
+
     // 需要原子类，因为有并发问题
     AtomicInteger xid = new AtomicInteger(0);
 
