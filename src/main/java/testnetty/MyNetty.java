@@ -1,13 +1,12 @@
 package testnetty;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.ChannelPipeline;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -146,6 +145,41 @@ public class MyNetty {
 
         bind.sync().channel().closeFuture().sync();
     }
+
+    @Test
+    public void testNettyClient() throws InterruptedException {
+        NioEventLoopGroup group = new NioEventLoopGroup(1);
+        Bootstrap bs = new Bootstrap(); // 引导类可以减少很多代码量
+        ChannelFuture bind = bs.group(group)
+                .channel(NioSocketChannel.class)
+                .handler(new ChannelInitializer<NioSocketChannel>() {
+                    @Override
+                    protected void initChannel(NioSocketChannel ch) throws Exception {
+                        ChannelPipeline pipeline = ch.pipeline();
+                        pipeline.addLast(new MyHandler());
+                    }
+                })
+                .connect(new InetSocketAddress("192.168.46.129", 9999));
+        bind.sync().channel().closeFuture().sync();
+    }
+
+    @Test
+    public void testNettyServer(){
+        NioEventLoopGroup group = new NioEventLoopGroup(1);
+        ServerBootstrap bs = new ServerBootstrap();
+        bs.group(group,group);
+        bs.channel(NioServerSocketChannel.class)
+                .childHandler(new ChannelInitializer<NioServerSocketChannel>() {
+                    @Override
+                    protected void initChannel(NioServerSocketChannel ch) throws Exception {
+                        ChannelPipeline pipeline = ch.pipeline();
+                        pipeline.addLast(new MyHandler());
+                    }
+                }).bind(new InetSocketAddress(9999));
+    }
+
+
+
 }
 
 
